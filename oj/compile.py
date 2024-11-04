@@ -156,23 +156,43 @@ class ImlBuilder:
             return False
 
 
-def main():
-    app_dir = Path("/app")
-    iml_files = list(app_dir.glob("*.iml"))
+def find_src_path(start_dir: str):
+    source_code_path = start_dir
+    for name in os.listdir(source_code_path):
+        cur_path = os.path.join(source_code_path, name)
+        if os.path.isdir(cur_path):
+            source_code_path = cur_path  # GroupID
+            break
+
+    source_code_path = os.path.join(source_code_path, "SourceCode")
+    for name in os.listdir(source_code_path):
+        if os.path.isfile(os.path.join(source_code_path, name)) and name.endswith(
+            ".iml"
+        ):
+            return source_code_path
+    dirs = [
+        os.path.join(source_code_path, name)
+        for name in os.listdir(source_code_path)
+        if os.path.isdir(os.path.join(source_code_path, name))
+    ]
+    if len(dirs) == 1:
+        return os.path.join(source_code_path, dirs[0])
+    return source_code_path
+
+
+def run() -> dict[str, bool]:
+    start_dir = "/app"
+    src_path = Path(find_src_path(start_dir))
+    print(src_path)
+
+    iml_files = list(src_path.glob("*.iml"))
     if not iml_files:
         print("No .iml file found in current directory")
         return 1
 
     builder = ImlBuilder(str(iml_files[0]))
 
-    if not builder.compile():
-        return 1
+    compile_result = True if builder.compile() else False
+    test_result = True if builder.run_tests() else False
 
-    if not builder.run_tests():
-        return 1
-
-    return 0
-
-
-if __name__ == "__main__":
-    sys.exit(main())
+    return {"compile": compile_result, "test": test_result, "src_path": str(src_path)}
