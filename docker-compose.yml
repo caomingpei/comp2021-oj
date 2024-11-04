@@ -6,9 +6,9 @@ services:
       context: .
       dockerfile: Dockerfile
     volumes:
-      - ./app:/app:consistent
+      - ./cut:/cut:consistent
       - ./oj:/oj
-      - ./results:/results:consistent
+      - ./res:/res:consistent
     working_dir: /
     command: sleep infinity
     ports:

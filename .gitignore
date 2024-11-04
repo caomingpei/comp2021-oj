@@ -25,10 +25,10 @@ replay_pid*
 
 **/disks/
 
-results/*
+res/*
 submissions/*
 
-app/*
+cut/*
 *.zip
 *.7z
 *.rar

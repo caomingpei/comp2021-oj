@@ -1,7 +1,7 @@
 # This file is used to grade single submission
 import os
 import shutil
-from config import APP_DIR, CONTAINER_NAME
+from config import CUT_DIR, CONTAINER_NAME
 import docker
 import platform
 import subprocess
@@ -37,13 +37,13 @@ def clean_dir(directory: str):
 def wait_for_container(container):
     os.system("sync")
     container.exec_run("sync", user="root")
-    container.exec_run("mount -o remount /app", user="root")
+    container.exec_run("mount -o remount /cut", user="root")
 
 
 def judge(zip_file_path: str):
     zip_file = os.path.basename(zip_file_path)
-    clean_dir(APP_DIR)
-    shutil.copy2(zip_file_path, os.path.join(APP_DIR, zip_file))
+    clean_dir(CUT_DIR)
+    shutil.copy2(zip_file_path, os.path.join(CUT_DIR, zip_file))
 
     client = docker.from_env()
     container = client.containers.get(CONTAINER_NAME)
@@ -52,7 +52,7 @@ def judge(zip_file_path: str):
     wait_for_container(container)
 
     result = container.exec_run(
-        f"python3 /oj/unpack.py -i /app/{zip_file} -o /app",
+        f"python3 /oj/unpack.py -i /cut/{zip_file} -o /cut",
         workdir="/",
         privileged=True,
         tty=True,

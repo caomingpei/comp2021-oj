@@ -181,7 +181,7 @@ def find_src_path(start_dir: str):
 
 
 def run() -> dict[str, bool]:
-    start_dir = "/app"
+    start_dir = "/cut"
     src_path = Path(find_src_path(start_dir))
     print(src_path)
 

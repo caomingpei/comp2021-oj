@@ -26,6 +26,6 @@ python /oj/compile.py
 
 ## Run
 ```bash
-cd /app
+cd /cut
 java -cp out hk.edu.polyu.comp.comp2021.cvfs.Application
 ```

@@ -7,7 +7,7 @@ RUN apt-get update && apt-get install -y \
     build-essential \
     && rm -rf /var/lib/apt/lists/*
 
-WORKDIR /app
+WORKDIR /cut
 
 
 RUN python3 -m venv /opt/venv

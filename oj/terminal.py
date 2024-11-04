@@ -8,30 +8,6 @@ import pexpect
 import json
 
 
-def get_initial_output(child, timeout_seconds=3):
-    def read_line():
-        try:
-            index = child.expect(["\r\n", pexpect.TIMEOUT], timeout=0.2)
-            if index == 0:
-                line = child.before.decode("utf-8").strip()
-                return line if line else None
-            return None
-        except pexpect.EOF:
-            return None
-
-    time.sleep(1)
-    initial_output = []
-    start_time = time.time()
-
-    while time.time() - start_time <= timeout_seconds:
-        line = read_line()
-        if line is None:
-            break
-        initial_output.append(line)
-
-    return initial_output
-
-
 def run_java(src_path: str):
     out_path = os.path.join(src_path, "out")
     java_command = f"java -cp {out_path} hk.edu.polyu.comp.comp2021.cvfs.Application"
@@ -40,8 +16,30 @@ def run_java(src_path: str):
     child.logfile = sys.stdout.buffer
 
     results = []
-    initial_output = get_initial_output(child)
+    timeout_seconds = 2
+    time.sleep(1)
+    start_time = time.time()
+    initial_output = []
+    while True:
+        if time.time() - start_time > timeout_seconds:
+            # Initial output timeout
+            break
+
+        try:
+            index = child.expect(["\r\n", pexpect.TIMEOUT], timeout=0.2)
+            if index == 0:
+                line = child.before.decode("utf-8").strip()
+                if line:
+                    initial_output.append(line)
+            else:
+                break
+        except pexpect.EOF:
+            break
+
     results.append({"command": "", "output": initial_output})
+
+    # wait for the application to run commands
+    time.sleep(0.5)
 
     # TODO: read from yaml file
     commands = ["newDisk 1000", "newDoc test html aab", "list"]
@@ -85,9 +83,7 @@ def entry(group_name: str):
         return
 
     running_results = run_java(src_path)
-    with open(
-        os.path.join("/results", f"{group_name}.json"), "w", encoding="utf-8"
-    ) as f:
+    with open(os.path.join("/res", f"{group_name}.json"), "w", encoding="utf-8") as f:
         json.dump(running_results, f, ensure_ascii=False, indent=4)
 
 
