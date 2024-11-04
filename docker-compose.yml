@@ -5,7 +5,7 @@ services:
       context: .
       dockerfile: Dockerfile
     volumes:
-      - ./app:/app
+      - ./app:/app:consistent
       - ./oj:/oj
     working_dir: /app
     command: sleep infinity
