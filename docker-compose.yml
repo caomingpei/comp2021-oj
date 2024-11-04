@@ -1,13 +1,17 @@
 version: '3.8'
 services:
   dev:
+    container_name: comp2021-oj
     build: 
       context: .
       dockerfile: Dockerfile
     volumes:
       - ./app:/app:consistent
       - ./oj:/oj
-    working_dir: /app
+    working_dir: /
     command: sleep infinity
     ports:
       - "20211:8080"
+    user: root
+    tty: true
+    privileged: true
