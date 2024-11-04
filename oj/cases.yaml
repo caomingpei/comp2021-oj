@@ -1,0 +1,5 @@
+commands:
+  - input: "newDisk 1000"
+  - input: "newDoc test html aab"
+  - input: "list"
+  - input: "newDir temp12"

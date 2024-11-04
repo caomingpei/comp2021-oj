@@ -1,6 +1,6 @@
 import compile
 import argparse
-import subprocess
+import yaml
 import time
 import sys
 import os
@@ -41,8 +41,9 @@ def run_java(src_path: str):
     # wait for the application to run commands
     time.sleep(0.5)
 
-    # TODO: read from yaml file
-    commands = ["newDisk 1000", "newDoc test html aab", "list"]
+    with open(os.path.join("/oj", "cases.yaml"), "r", encoding="utf-8") as f:
+        cases = yaml.safe_load(f)
+    commands = [case["input"] for case in cases["commands"]]
 
     for cmd in commands:
         child.sendline(cmd)
