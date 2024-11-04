@@ -41,9 +41,9 @@ def wait_for_container(container):
 
 
 def judge(zip_file_path: str):
-    zip_name = os.path.basename(zip_file_path)
+    zip_file = os.path.basename(zip_file_path)
     clean_dir(APP_DIR)
-    shutil.copy2(zip_file_path, os.path.join(APP_DIR, zip_name))
+    shutil.copy2(zip_file_path, os.path.join(APP_DIR, zip_file))
 
     client = docker.from_env()
     container = client.containers.get(CONTAINER_NAME)
@@ -52,14 +52,19 @@ def judge(zip_file_path: str):
     wait_for_container(container)
 
     result = container.exec_run(
-        f"python3 /oj/unpack.py -i /app/{zip_name} -o /app",
+        f"python3 /oj/unpack.py -i /app/{zip_file} -o /app",
         workdir="/",
         privileged=True,
         tty=True,
         user="root",
     )
 
+    zip_name = zip_file.split(".")[0] if zip_file.endswith(".zip") else zip_file
     result = container.exec_run(
-        "python3 /oj/terminal.py", workdir="/", privileged=True, tty=True, user="root"
+        f"python3 /oj/terminal.py -n {zip_name}",
+        workdir="/",
+        privileged=True,
+        tty=True,
+        user="root",
     )
     print(result.output.decode("utf-8"))
