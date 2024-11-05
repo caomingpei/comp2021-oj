@@ -25,20 +25,20 @@ docker compose up -d
 ```
 And the container will be named `comp2021-oj`.
 
-### Enter the container
+### Optional: Enter the container
 ```bash
 docker compose exec dev bash
 ```
 
-### Verify the installation
+### Optional: Verify the installation
 ```bash
 java --version
 git --version
 ```
-
+And then exit the container, and go back to the host machine.
 ## Prepare for grading
 
-**Put student submissions into `submissions/`**
+**Put student programs into `submissions/`** on the **host machine**.
 
 Note: the file in folder `cut/` will be deleted routinely during grading. Please **DO NOT** put any important files into the folder `cut/`.
 
