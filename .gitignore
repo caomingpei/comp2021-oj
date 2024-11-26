@@ -36,5 +36,6 @@ cut/*
 *.gz
 *.bz2
 *.xz
+archive/*
 
 **/__pycache__

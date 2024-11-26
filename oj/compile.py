@@ -42,6 +42,15 @@ class ImlBuilder:
                         )
                         self.libraries.add(jar_path)
 
+        for order_entry in root.findall(".//orderEntry[@type='library']"):
+            lib_name = order_entry.get("name")
+            if lib_name == "lib":
+                lib_dir = os.path.join(self.project_root, "lib")
+                if os.path.exists(lib_dir):
+                    for file in os.listdir(lib_dir):
+                        if file.endswith(".jar"):
+                            self.libraries.add(os.path.join(lib_dir, file))
+
     def find_java_files(self, directories):
         java_files = []
         for directory in directories:
@@ -52,15 +61,7 @@ class ImlBuilder:
         return java_files
 
     def create_classpath(self):
-        lib_dir = os.path.join(self.project_root, "lib")
-        project_jars = []
-        if os.path.exists(lib_dir):
-            for file in os.listdir(lib_dir):
-                if file.endswith(".jar"):
-                    project_jars.append(os.path.join(lib_dir, file))
-
-        all_libs = set(project_jars) | self.libraries
-        return ":".join(all_libs)
+        return ":".join(self.libraries) if self.libraries else ""
 
     def compile(self):
         try:
@@ -81,7 +82,8 @@ class ImlBuilder:
                 print("Compiling test files...")
                 test_files = self.find_java_files(self.test_sources)
                 if test_files:
-                    classpath = f"{self.output_dir}:{self.create_classpath()}"
+                    lib_classpath = os.path.join(self.project_root, "lib", "*")
+                    classpath = f"{self.output_dir}:{lib_classpath}:{self.create_classpath()}"
                     cmd = ["javac", "-d", self.output_dir, "-cp", classpath]
                     cmd.extend(test_files)
                     subprocess.run(cmd, check=True)
@@ -115,7 +117,6 @@ class ImlBuilder:
             return True
 
         try:
-            print("Running tests...")
             lib_classpath = os.path.join(self.project_root, "lib", "*")
             classpath = f"{self.output_dir}:{lib_classpath}:{self.create_classpath()}"
 
