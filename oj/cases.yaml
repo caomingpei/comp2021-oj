@@ -1,5 +1,108 @@
 commands:
+  # new disk and initial files
   - input: "newDisk 1000"
-  - input: "newDoc test html aab"
+  - input: "newDoc test txt ab"
+  - input: "newDoc test txt abc"
+  - input: "newDoc test2 html abcd"
+  - input: "newDoc test3 java abcde"
+  - input: "newDoc test4 css abcdef"
   - input: "list"
-  - input: "newDir temp12"
+
+  # new directory and documents
+  - input: "newDir dir1"
+  - input: "changeDir dir1"                       
+  - input: "newDoc test5 txt abcdefg."   
+  
+  # go back to root and delete file
+  - input: "changeDir .."                          
+  - input: "delete test"                          
+  
+  # rename file
+  - input: "rename test2 test2rn"            
+  
+  # go back to dir1 and list files
+  - input: "changeDir dir1"                        
+  - input: "list"                                   
+
+  # Testing invalid commands & edge cases
+  - input: 'delete non_existing_file'                  
+  - input: 'rename non_existing_file new_name'        
+  - input: 'changeDir nonexistent_dir'                 
+  - input: 'newDoc invalid_name invalid_type content'  
+  - input: 'newDir invalid@dir!'                       
+
+  # Testing maximum filename length and valid characters
+  - input: 'newDoc tooLongName12 txt valid'     
+  
+  # Test creating multiple directories & nesting them
+  - input: 'newDir dir2'
+  - input: 'changeDir dir2'
+  - input: 'newDir subdir1'
+  - input: 'changeDir subdir1'
+    
+  # Navigating back up the directory structure 
+  - input: 'changeDir ..'
+  - input: 'changeDir ..'
+
+  # Deleting directories (should not allow deletion if not empty)
+  - input : 'delete dir2'                            
+
+  # List all files after various operations 
+  - input : 'rList'                                  
+      
+  # Create criteria with edge cases
+  - input : 'newSimpleCri ca name contains "test"'      
+  - input : 'search ca'                             
+  - input : 'rSearch ca'
+
+  - input: 'newDir dir3'
+  - input: 'changeDir dir3'
+  - input: 'newDoc test6 txt abcdefghijk'
+  - input: 'changeDir ..'
+  - input: 'newDoc test7 txt abcdefghijkl'
+  # Test binary criteria, IsDocument && c3
+  - input: 'newBinaryCri cb IsDocument && ca' 
+  - input: 'rSearch cb'
+
+  - input : 'newSimpleCri invalid name contains "test"'
+  - input : 'printAllCriteria'
+
+  # Test saving/loading virtual disks with various paths/characters
+  - input : 'save ./vfdisk.vd'
+  - input : 'load ./invalid_path/not_vfdisk.vd'
+  
+  - input : 'load ./vfdisk.vd'
+
+  # [BON1] Support for saving and loading defined search criteria
+  - input : 'printAllCriteria'
+
+  - input : 'newDisk 50'
+  - input : 'newSimpleCri ca name contains "abc"'
+  - input : 'save simple.vd'
+  - input : 'load simple.vd'
+  - input : 'printAllCriteria'
+
+  # New disk
+  - input: 'newDisk 1000'
+  # [BON2] Implementing undo and redo functionality
+  # Adding documents, directories, etc.
+  - input: 'newDoc test10 java abc'
+  - input: 'newDir dir2'
+  - input: 'list'
+  - input: 'changeDir dir2'
+  - input: 'newDoc test11 css abcd'
+
+  # Now perform undo/redo operations
+  - input: 'undo'                                     # Undo last operation (should remove test11)
+  - input: 'undo'                                     # Undo previous operation (should remove dir2)
+  - input: 'list'                                    # List files to verify changes 
+  - input: 'redo'                                     # Redo last undone operation (should recreate dir2)
+  - input: 'redo'                                     # Redo again to recreate test1
+  - input: 'list'                                    # Check if all operations are correctly undone and redone
+
+
+  # Tests for CLI exit behavior 
+  - input : 'quit'
+
+
+   
